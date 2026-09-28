@@ -1,0 +1,1577 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Balvia</title>
+<meta name="description" content="A relationship ledger for tracking customers, clients, suppliers, lenders, borrowers and architects — contact info, what they offer, and when to follow up.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+  :root {
+    --bg: #F3F6F1;
+    --surface: #FFFFFF;
+    --surface-2: #EAEFE6;
+    --border: #D7DECD;
+    --border-strong: #BFC9B2;
+    --ink: #172318;
+    --ink-dim: #56634F;
+    --ink-faint: #86917E;
+    --accent: #0F5C4E;
+    --accent-ink: #FFFFFF;
+    --accent-soft: #DCEBE3;
+    --accent-soft-ink: #0F5C4E;
+
+    --type-customer: #0F5C4E;
+    --type-client: #2F5A80;
+    --type-supplier: #8A6A1B;
+    --type-lender: #6B4A8A;
+    --type-borrower: #A0532A;
+    --type-architect: #8A3F60;
+
+    --status-overdue: #AE3327;
+    --status-overdue-soft: #F6DEDA;
+    --status-due: #97650E;
+    --status-due-soft: #F5E7C8;
+    --status-scheduled: #2B5F8C;
+    --status-scheduled-soft: #DCE7F0;
+    --status-done: #3E7A52;
+    --status-done-soft: #DEEBE1;
+    --status-none: #86917E;
+    --status-none-soft: #EAEFE6;
+
+    --shadow: 0 12px 28px -12px rgba(23, 35, 24, 0.22);
+    --shadow-sm: 0 2px 8px -2px rgba(23, 35, 24, 0.14);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0F1512;
+      --surface: #161F1A;
+      --surface-2: #1C2620;
+      --border: #2B372F;
+      --border-strong: #3C4A3F;
+      --ink: #E9F0E6;
+      --ink-dim: #AAB8A4;
+      --ink-faint: #74846D;
+      --accent: #48B49A;
+      --accent-ink: #06231C;
+      --accent-soft: #1C332C;
+      --accent-soft-ink: #6BCBB3;
+
+      --type-customer: #48B49A;
+      --type-client: #85AED4;
+      --type-supplier: #D8B65D;
+      --type-lender: #BB9CDE;
+      --type-borrower: #E29867;
+      --type-architect: #D98FAE;
+
+      --status-overdue: #E68579;
+      --status-overdue-soft: #3A211E;
+      --status-due: #E3B65B;
+      --status-due-soft: #3A2F17;
+      --status-scheduled: #86B6E0;
+      --status-scheduled-soft: #1E2C3A;
+      --status-done: #7FC298;
+      --status-done-soft: #1C2E22;
+      --status-none: #7C8B78;
+      --status-none-soft: #1C2620;
+
+      --shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.5);
+      --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.4);
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0F1512;
+    --surface: #161F1A;
+    --surface-2: #1C2620;
+    --border: #2B372F;
+    --border-strong: #3C4A3F;
+    --ink: #E9F0E6;
+    --ink-dim: #AAB8A4;
+    --ink-faint: #74846D;
+    --accent: #48B49A;
+    --accent-ink: #06231C;
+    --accent-soft: #1C332C;
+    --accent-soft-ink: #6BCBB3;
+
+    --type-customer: #48B49A;
+    --type-client: #85AED4;
+    --type-supplier: #D8B65D;
+    --type-lender: #BB9CDE;
+    --type-borrower: #E29867;
+    --type-architect: #D98FAE;
+
+    --status-overdue: #E68579;
+    --status-overdue-soft: #3A211E;
+    --status-due: #E3B65B;
+    --status-due-soft: #3A2F17;
+    --status-scheduled: #86B6E0;
+    --status-scheduled-soft: #1E2C3A;
+    --status-done: #7FC298;
+    --status-done-soft: #1C2E22;
+    --status-none: #7C8B78;
+    --status-none-soft: #1C2620;
+
+    --shadow: 0 12px 28px -12px rgba(0, 0, 0, 0.5);
+    --shadow-sm: 0 2px 8px -2px rgba(0, 0, 0, 0.4);
+  }
+
+  * { box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+  ::selection { background: var(--accent-soft); color: var(--accent-soft-ink); }
+  *:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+  h1, h2, h3 { font-family: "Fraunces", Georgia, serif; font-weight: 600; margin: 0; text-wrap: balance; }
+  .mono { font-family: "IBM Plex Mono", ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+
+  a { color: inherit; }
+  button { font: inherit; color: inherit; }
+
+  .app {
+    display: grid;
+    grid-template-columns: 260px 1fr;
+    min-height: 100vh;
+  }
+
+  /* ---------- Sidebar ---------- */
+  .sidebar {
+    background: var(--surface-2);
+    border-right: 1px solid var(--border);
+    padding: 22px 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+  }
+  .brand { display: flex; flex-direction: column; gap: 2px; }
+  .brand-mark { font-size: 24px; letter-spacing: -0.01em; }
+  .brand-tag { color: var(--ink-dim); font-size: 12px; letter-spacing: 0.02em; }
+
+  .search-field {
+    position: relative;
+    display: flex;
+    align-items: center;
+  }
+  .search-field svg { position: absolute; left: 10px; width: 15px; height: 15px; color: var(--ink-faint); pointer-events: none; }
+  .search-field input {
+    width: 100%;
+    padding: 9px 10px 9px 32px;
+    border-radius: 9px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--ink);
+    font: inherit;
+  }
+  .search-field input::placeholder { color: var(--ink-faint); }
+
+  .filter-group { display: flex; flex-direction: column; gap: 2px; }
+  .filter-label {
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--ink-faint); margin: 0 0 6px 2px; font-weight: 600;
+  }
+  .filter-row {
+    display: flex; align-items: center; gap: 9px;
+    padding: 7px 8px; border-radius: 8px; cursor: pointer;
+    font-size: 13.5px;
+  }
+  .filter-row:hover { background: var(--surface); }
+  .filter-row input { accent-color: var(--accent); width: 14px; height: 14px; }
+  .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .filter-row .name { flex: 1; }
+  .filter-row .count { color: var(--ink-faint); font-size: 12px; }
+
+  .sidebar-spacer { flex: 1; }
+  .sync-note { font-size: 11.5px; color: var(--ink-faint); display: flex; align-items: center; gap: 6px; }
+  .sync-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--status-done); flex-shrink: 0; }
+  .sync-dot.local { background: var(--status-due); }
+
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 7px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--ink);
+    padding: 9px 14px;
+    border-radius: 9px;
+    font-weight: 500;
+    font-size: 13.5px;
+    cursor: pointer;
+    transition: filter 0.15s, transform 0.06s;
+  }
+  .btn:hover { filter: brightness(0.97); }
+  @media (prefers-color-scheme: dark) { .btn:hover { filter: brightness(1.15); } }
+  .btn:active { transform: translateY(1px); }
+  .btn-primary { background: var(--accent); color: var(--accent-ink); border-color: transparent; }
+  .btn-primary svg { width: 15px; height: 15px; }
+  .btn-ghost { background: transparent; border-color: transparent; padding: 6px; }
+  .btn-icon { width: 30px; height: 30px; padding: 0; }
+  .btn-icon svg { width: 15px; height: 15px; }
+  .btn-block { width: 100%; }
+
+  /* ---------- Main ---------- */
+  .main { padding: 28px 32px 48px; max-width: 1180px; }
+  .main-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin-bottom: 22px; flex-wrap: wrap; }
+  .main-head h1 { font-size: 26px; }
+  .main-head p { margin: 4px 0 0; color: var(--ink-dim); font-size: 13.5px; }
+
+  .stats { display: grid; grid-template-columns: repeat(4, minmax(0,1fr)); gap: 12px; margin-bottom: 26px; }
+  .stat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px;
+  }
+  .stat .n { font-family: "Fraunces", serif; font-size: 26px; font-weight: 600; }
+  .stat .l { font-size: 12px; color: var(--ink-dim); margin-top: 2px; }
+  .stat.warn .n { color: var(--status-due); }
+  .stat.bad .n { color: var(--status-overdue); }
+
+  .table-wrap {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: auto;
+    box-shadow: var(--shadow-sm);
+  }
+  table { width: 100%; border-collapse: collapse; min-width: 880px; }
+  thead th {
+    text-align: left;
+    font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--ink-faint); font-weight: 600;
+    padding: 12px 14px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-2);
+    position: sticky; top: 0;
+    white-space: nowrap;
+  }
+  thead th.sortable { cursor: pointer; user-select: none; }
+  thead th.sortable:hover { color: var(--ink-dim); }
+  thead th .arrow { display: inline-block; margin-left: 3px; opacity: 0.6; }
+  tbody td { padding: 12px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  tbody tr:last-child td { border-bottom: none; }
+  tbody tr:hover { background: var(--surface-2); }
+
+  .who .name { font-weight: 600; }
+  .who .company { color: var(--ink-dim); font-size: 12.5px; margin-top: 1px; }
+  .who .address { color: var(--ink-faint); font-size: 11.5px; }
+
+  .pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 9px; border-radius: 999px;
+    font-size: 11.5px; font-weight: 600; white-space: nowrap;
+  }
+  .pill .dot { width: 6px; height: 6px; }
+
+  .contact-lines { display: flex; flex-direction: column; gap: 2px; font-size: 12.5px; }
+  .contact-lines a { text-decoration: none; }
+  .contact-lines a:hover { text-decoration: underline; }
+  .ctag { font-size: 9.5px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--ink-faint); margin-right: 5px; }
+  .muted { color: var(--ink-faint); }
+
+  .offer-cell { max-width: 220px; font-size: 12.5px; color: var(--ink-dim); }
+
+  .followup { display: flex; flex-direction: column; gap: 5px; align-items: flex-start; }
+  .status-chip {
+    display: inline-flex; align-items: center; gap: 5px;
+    padding: 3px 8px; border-radius: 7px;
+    font-size: 11.5px; font-weight: 600;
+  }
+  .done-toggle {
+    font-size: 11px; color: var(--ink-faint); background: none; border: none; cursor: pointer;
+    padding: 0; text-decoration: underline; text-underline-offset: 2px;
+  }
+  .done-toggle:hover { color: var(--ink); }
+
+  .row-actions { display: flex; gap: 4px; justify-content: flex-end; }
+
+  /* ---------- contact card grid ---------- */
+  .list-toolbar { display: flex; align-items: center; gap: 8px; margin-bottom: 14px; }
+  .sort-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-faint); font-weight: 600; margin-right: 2px; }
+  .sort-btn {
+    border: 1px solid var(--border); background: var(--surface); color: var(--ink-dim);
+    font-size: 12.5px; font: inherit; padding: 5px 11px; border-radius: 999px; cursor: pointer;
+  }
+  .sort-btn:hover { border-color: var(--border-strong); color: var(--ink); }
+  .sort-btn.active { background: var(--accent-soft); color: var(--accent-soft-ink); border-color: transparent; font-weight: 600; }
+
+  .contact-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; }
+  .contact-card {
+    position: relative;
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 14px 16px; box-shadow: var(--shadow-sm);
+    display: flex; flex-direction: column; gap: 7px;
+    cursor: pointer; transition: border-color 0.15s, box-shadow 0.15s, transform 0.06s;
+  }
+  .contact-card:hover { border-color: var(--border-strong); box-shadow: var(--shadow); }
+  .contact-card:active { transform: translateY(1px); }
+  .card-actions { position: absolute; top: 10px; right: 10px; display: flex; gap: 2px; opacity: 0; transition: opacity 0.15s; }
+  .contact-card:hover .card-actions, .contact-card:focus-within .card-actions { opacity: 1; }
+  .card-row { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 12.5px; color: var(--ink-dim); }
+  .card-head { display: flex; align-items: center; gap: 8px; padding-right: 54px; }
+  .card-name { font-weight: 600; font-size: 15px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+  .card-head .pill { flex-shrink: 0; }
+  .card-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 1px; }
+  .card-foot .status-chip { overflow: hidden; text-overflow: ellipsis; }
+
+  .empty-state {
+    background: var(--surface);
+    border: 1px dashed var(--border-strong);
+    border-radius: 14px;
+    padding: 40px 32px;
+    text-align: center;
+  }
+  .empty-state h2 { font-size: 20px; margin-bottom: 6px; }
+  .empty-state p { color: var(--ink-dim); max-width: 440px; margin: 0 auto 20px; }
+  .example-tag {
+    display: inline-block; font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--ink-faint); background: var(--surface-2); border: 1px solid var(--border);
+    padding: 2px 8px; border-radius: 999px; margin-bottom: 16px;
+  }
+  .example-table { opacity: 0.55; pointer-events: none; margin-top: 8px; text-align: left; }
+
+  /* ---------- Slide-over ---------- */
+  .overlay {
+    position: fixed; inset: 0; background: rgba(15, 20, 16, 0.4);
+    opacity: 0; pointer-events: none; transition: opacity 0.18s;
+    z-index: 20;
+  }
+  .overlay.open { opacity: 1; pointer-events: auto; }
+
+  .panel {
+    position: fixed; top: 0; right: 0; bottom: 0; width: min(420px, 100vw);
+    background: var(--surface);
+    border-left: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    transform: translateX(100%);
+    transition: transform 0.22s ease;
+    z-index: 21;
+    display: flex; flex-direction: column;
+  }
+  .panel.open { transform: translateX(0); }
+  .panel-head {
+    padding: 18px 22px; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .panel-head h2 { font-size: 18px; }
+  .panel-body { padding: 20px 22px; overflow-y: auto; flex: 1; display: flex; flex-direction: column; gap: 16px; }
+  .panel-foot { padding: 16px 22px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+
+  .field { display: flex; flex-direction: column; gap: 6px; }
+  .field label { font-size: 12px; font-weight: 600; color: var(--ink-dim); }
+  .field .req { color: var(--status-overdue); }
+  .field input, .field select, .field textarea {
+    font: inherit; padding: 9px 11px; border-radius: 8px;
+    border: 1px solid var(--border-strong); background: var(--bg); color: var(--ink);
+    width: 100%;
+  }
+  .field textarea { resize: vertical; min-height: 62px; }
+  .field-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .checkbox-label { display: flex; align-items: center; gap: 8px; font-size: 13.5px; font-weight: 500; cursor: pointer; }
+  .checkbox-label input { accent-color: var(--accent); width: 15px; height: 15px; }
+  .notify-users-list {
+    display: flex; flex-direction: column; gap: 6px;
+    margin-top: 10px; padding: 10px 12px;
+    border: 1px solid var(--border); border-radius: 9px; background: var(--bg);
+  }
+  .notify-users-list .user-check { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+  .notify-users-list .user-check input { accent-color: var(--accent); width: 14px; height: 14px; }
+  .notify-users-list .user-check .email { color: var(--ink-faint); font-size: 11.5px; }
+  .notify-users-list .empty-hint { color: var(--ink-faint); font-size: 12.5px; }
+
+  /* ---------- sidebar nav link ---------- */
+  .sidebar-link {
+    justify-content: flex-start; width: 100%; background: transparent;
+    color: var(--ink-dim); border-color: transparent; padding: 8px 8px;
+  }
+  .sidebar-link:hover { background: var(--surface); color: var(--ink); }
+  .sidebar-link svg { width: 15px; height: 15px; }
+
+  /* ---------- users panel ---------- */
+  .hint { color: var(--ink-dim); font-size: 12.5px; margin: 0; }
+  .users-list { display: flex; flex-direction: column; gap: 4px; }
+  .user-row {
+    display: flex; align-items: center; gap: 10px;
+    padding: 8px 4px; border-bottom: 1px solid var(--border);
+  }
+  .user-row:last-child { border-bottom: none; }
+  .user-row .who { flex: 1; }
+  .user-row .u-name { font-weight: 600; font-size: 13.5px; }
+  .user-row .u-email { color: var(--ink-dim); font-size: 12px; }
+  .users-empty { color: var(--ink-faint); font-size: 12.5px; padding: 6px 4px 4px; }
+  .user-add-form { display: flex; flex-direction: column; gap: 12px; margin-top: 6px; padding-top: 14px; border-top: 1px solid var(--border); }
+  .user-form-actions { display: flex; gap: 10px; }
+  .user-form-actions .btn-primary { flex: 1; }
+  .user-row.editing { background: var(--accent-soft); border-radius: 8px; border-bottom-color: transparent; }
+
+  /* ---------- notification bell ---------- */
+  .head-actions { position: relative; display: flex; align-items: flex-start; }
+  .bell-btn { position: relative; width: 36px; height: 36px; border-radius: 10px; }
+  .bell-btn svg { width: 17px; height: 17px; }
+  .badge {
+    position: absolute; top: -4px; right: -4px;
+    min-width: 16px; height: 16px; padding: 0 4px;
+    background: var(--status-overdue); color: #fff;
+    border-radius: 999px; font-size: 10px; font-weight: 700;
+    display: flex; align-items: center; justify-content: center;
+    line-height: 1;
+  }
+  .notif-dropdown {
+    position: absolute; top: 44px; right: 0; width: min(320px, calc(100vw - 32px)); max-height: 360px;
+    overflow-y: auto; background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; box-shadow: var(--shadow); z-index: 15; padding: 8px;
+  }
+  .notif-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--ink-faint); font-weight: 600; padding: 6px 8px; }
+  .notif-item { padding: 9px 8px; border-radius: 8px; }
+  .notif-item:hover { background: var(--surface-2); }
+  .notif-item .n-name { font-weight: 600; font-size: 13px; }
+  .notif-item .n-meta { font-size: 11.5px; color: var(--ink-dim); margin-top: 2px; }
+  .notif-empty { padding: 18px 10px; text-align: center; color: var(--ink-faint); font-size: 12.5px; }
+
+  /* ---------- toast ---------- */
+  .toast {
+    position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%);
+    background: var(--ink); color: var(--bg);
+    padding: 11px 18px; border-radius: 9px;
+    font-size: 13px; font-weight: 500;
+    box-shadow: var(--shadow); z-index: 30; max-width: min(380px, calc(100vw - 32px)); text-align: center;
+  }
+  .toast.error { background: var(--status-overdue); color: #fff; }
+
+  /* ---------- confirm dialog ---------- */
+  .confirm-overlay {
+    position: fixed; inset: 0; background: rgba(15, 20, 16, 0.45);
+    display: flex; align-items: center; justify-content: center;
+    z-index: 40; padding: 20px;
+  }
+  .confirm-box {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; box-shadow: var(--shadow);
+    padding: 20px; max-width: 340px; width: 100%;
+  }
+  .confirm-box p { margin: 0 0 16px; font-size: 13.5px; color: var(--ink); }
+  .confirm-actions { display: flex; gap: 10px; justify-content: flex-end; }
+  .btn-danger { background: var(--status-overdue); color: #fff; border-color: transparent; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .overlay, .panel, .btn { transition: none !important; }
+  }
+
+  @media (max-width: 880px) {
+    .app { grid-template-columns: 1fr; }
+    .sidebar {
+      flex-direction: row; flex-wrap: wrap; align-items: center;
+      border-right: none; border-bottom: 1px solid var(--border);
+      gap: 10px 12px;
+    }
+    .brand { flex: 1 1 auto; }
+    .search-field { flex: 1 1 160px; min-width: 140px; }
+    .filter-group { display: none; }
+    .sidebar-spacer { display: none; }
+    .sync-note { order: 4; flex-basis: 100%; }
+    .sidebar-link, .btn-block { width: auto; flex: 0 0 auto; }
+    .stats { grid-template-columns: repeat(2, 1fr); }
+    .main { padding: 16px; }
+    .main-head { gap: 10px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">
+      <div class="brand-mark">Balvia</div>
+      <div class="brand-tag">relationship ledger</div>
+    </div>
+
+    <div class="search-field">
+      <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="9" r="6.2"/><path d="M17 17l-3.8-3.8" stroke-linecap="round"/></svg>
+      <input id="search" type="text" placeholder="Search contacts…" autocomplete="off">
+    </div>
+
+    <div class="filter-group" id="filterGroup">
+      <div class="filter-label">Type</div>
+      <!-- filter rows injected -->
+    </div>
+
+    <button class="btn sidebar-link" id="usersBtn" type="button">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="8" cy="5.2" r="2.4"/><path d="M2.8 13.2c.7-2.6 2.8-4 5.2-4s4.5 1.4 5.2 4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Notification users
+    </button>
+
+    <div class="sidebar-spacer"></div>
+
+    <div class="sync-note" id="syncNote"><span class="sync-dot" id="syncDot"></span><span id="syncText">Connecting…</span></div>
+
+    <button class="btn btn-primary btn-block" id="addBtn">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M8 2.5v11M2.5 8h11" stroke-linecap="round"/></svg>
+      Add contact
+    </button>
+  </aside>
+
+  <main class="main">
+    <div class="main-head">
+      <div>
+        <h1>Your ledger</h1>
+        <p>Every customer, client, supplier, lender, borrower and architect — who they are, what they offer, and when to reach back out.</p>
+      </div>
+      <div class="head-actions">
+        <button class="btn btn-icon bell-btn" id="bellBtn" type="button" aria-label="Notifications">
+          <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 2.5c-2 0-3.4 1.6-3.4 3.6v2.1c0 .5-.2 1-.6 1.4l-.9 1c-.5.6-.1 1.5.7 1.5h8.4c.8 0 1.2-.9.7-1.5l-.9-1c-.4-.4-.6-.9-.6-1.4V6.1c0-2-1.4-3.6-3.4-3.6z" stroke-linecap="round" stroke-linejoin="round"/><path d="M7.3 14c.3.7 1 1.2 1.7 1.2s1.4-.5 1.7-1.2" stroke-linecap="round"/></svg>
+          <span class="badge" id="bellBadge" hidden>0</span>
+        </button>
+        <div class="notif-dropdown" id="notifDropdown" hidden></div>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><div class="n mono" id="statTotal">0</div><div class="l">Total contacts</div></div>
+      <div class="stat bad"><div class="n mono" id="statOverdue">0</div><div class="l">Overdue follow-up</div></div>
+      <div class="stat warn"><div class="n mono" id="statDue">0</div><div class="l">Due within 7 days</div></div>
+      <div class="stat"><div class="n mono" id="statNone">0</div><div class="l">No follow-up set</div></div>
+    </div>
+
+    <div id="content"><!-- table or empty state injected --></div>
+  </main>
+</div>
+
+<div class="overlay" id="overlay"></div>
+<aside class="panel" id="panel" aria-hidden="true">
+  <div class="panel-head">
+    <h2 id="panelTitle">Add contact</h2>
+    <button class="btn btn-ghost btn-icon" id="panelClose" aria-label="Close">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l10 10M13 3L3 13" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <form class="panel-body" id="contactForm">
+    <input type="hidden" id="f-id">
+    <div class="field">
+      <label for="f-name">Name <span class="req">*</span></label>
+      <input id="f-name" required placeholder="Jordan Vale">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="f-type">Type <span class="req">*</span></label>
+        <select id="f-type" required></select>
+      </div>
+      <div class="field">
+        <label for="f-company">Company</label>
+        <input id="f-company" placeholder="Optional">
+      </div>
+    </div>
+    <div class="field">
+      <label for="f-address">Company address</label>
+      <input id="f-address" placeholder="123 Main St, Springfield, IL">
+    </div>
+    <div class="field">
+      <label for="f-email">Email</label>
+      <input id="f-email" type="email" placeholder="name@company.com">
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="f-phoneWork">Work phone</label>
+        <input id="f-phoneWork" type="tel" placeholder="(555) 010-0000">
+      </div>
+      <div class="field">
+        <label for="f-phoneMobile">Mobile phone</label>
+        <input id="f-phoneMobile" type="tel" placeholder="(555) 010-0000">
+      </div>
+    </div>
+    <div class="field">
+      <label for="f-offer">What they offer / need</label>
+      <textarea id="f-offer" placeholder="e.g. Net-30 terms on packaging supplies, looking to expand order volume in Q4"></textarea>
+    </div>
+    <div class="field-row">
+      <div class="field">
+        <label for="f-first">First contacted</label>
+        <input id="f-first" type="date">
+      </div>
+      <div class="field">
+        <label for="f-source">Source</label>
+        <select id="f-source"></select>
+      </div>
+    </div>
+    <div class="field">
+      <label for="f-followup">Follow up on</label>
+      <input id="f-followup" type="date">
+    </div>
+    <div class="field">
+      <label class="checkbox-label"><input type="checkbox" id="f-notify-enabled"> Notify company users for this contact</label>
+      <div class="notify-users-list" id="notifyUsersList"></div>
+    </div>
+    <div class="field">
+      <label for="f-notes">Notes</label>
+      <textarea id="f-notes" placeholder="Anything worth remembering before the next call"></textarea>
+    </div>
+  </form>
+  <div class="panel-foot">
+    <button class="btn" id="cancelBtn" type="button">Cancel</button>
+    <button class="btn btn-primary" id="saveBtn" type="submit" form="contactForm">Save contact</button>
+  </div>
+</aside>
+
+<div class="overlay" id="usersOverlay"></div>
+<aside class="panel" id="usersPanelEl" aria-hidden="true">
+  <div class="panel-head">
+    <h2>Notification users</h2>
+    <button class="btn btn-ghost btn-icon" id="usersPanelClose" aria-label="Close">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M3 3l10 10M13 3L3 13" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div class="panel-body">
+    <p class="hint">Add the people who should be notified when a contact's follow-up comes due. Then on each contact, turn notifications on and choose who gets alerted here in Balvia.</p>
+    <div class="users-list" id="usersList"></div>
+    <form class="user-add-form" id="userAddForm">
+      <div class="field-row">
+        <div class="field">
+          <label for="u-name">Name</label>
+          <input id="u-name" required placeholder="Alex Rivera">
+        </div>
+        <div class="field">
+          <label for="u-email">Email</label>
+          <input id="u-email" type="email" required placeholder="alex@company.com">
+        </div>
+      </div>
+      <div class="user-form-actions">
+        <button class="btn" id="userFormCancel" type="button" hidden>Cancel</button>
+        <button class="btn btn-primary" id="userFormSubmit" type="submit">Add user</button>
+      </div>
+    </form>
+  </div>
+</aside>
+
+<div class="toast" id="toast" hidden></div>
+
+<div class="confirm-overlay" id="confirmOverlay" hidden>
+  <div class="confirm-box">
+    <p id="confirmMessage"></p>
+    <div class="confirm-actions">
+      <button class="btn" id="confirmCancel" type="button">Cancel</button>
+      <button class="btn btn-danger" id="confirmOk" type="button">Remove</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="config.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  var TYPES = [
+    { id: "customer", label: "Customer" },
+    { id: "client", label: "Client" },
+    { id: "supplier", label: "Supplier" },
+    { id: "lender", label: "Lender" },
+    { id: "borrower", label: "Borrower" },
+    { id: "architect", label: "Architect" }
+  ];
+  var TYPE_LABEL = {};
+  TYPES.forEach(function (t) { TYPE_LABEL[t.id] = t.label; });
+
+  var SOURCES = [
+    { id: "call-in", label: "Call in" },
+    { id: "email-in", label: "Email in" },
+    { id: "reference", label: "Reference" },
+    { id: "call-out", label: "Call out" },
+    { id: "event", label: "Event" }
+  ];
+  var SOURCE_LABEL = {};
+  SOURCES.forEach(function (s) { SOURCE_LABEL[s.id] = s.label; });
+
+  var EXAMPLES = [
+    { name: "Reyes & Salt Co.", type: "customer", company: "Reyes & Salt Co.", offer: "Recurring wholesale orders, quarterly reorder pattern", followUpDate: "soon" },
+    { name: "Marisol Vega", type: "lender", company: "Northbridge Capital", offer: "Line of credit renewal, awaiting updated financials", followUpDate: "overdue" },
+    { name: "Denny Okafor", type: "supplier", company: "Okafor Freight", offer: "Better rate on pallet shipping over 500 units", followUpDate: "scheduled" }
+  ];
+
+  var state = {
+    contacts: [],
+    loaded: false,
+    activeTypes: new Set(TYPES.map(function (t) { return t.id; })),
+    search: "",
+    sortKey: "followUpDate",
+    sortDir: "asc",
+    editingId: null,
+    store: null,
+    storeMode: "connecting",
+    users: [],
+    usersLoaded: false,
+    usersStore: null,
+    editingUserId: null,
+    formDirty: false
+  };
+
+  // ---------- storage backends ----------
+
+  function nowIso() { return new Date().toISOString(); }
+  function uid() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return "id-" + Math.random().toString(36).slice(2) + Date.now().toString(36);
+  }
+
+  // Supabase-backed store: each row is {id, data jsonb, created_at, updated_at}.
+  // `data` holds the whole record as JSON, so the rest of the app can keep
+  // using the same camelCase field names it always has.
+  function makeSupabaseCollectionStore(sb, table) {
+    function toRow(record) {
+      var row = Object.assign({}, record.data || {});
+      row.id = record.id;
+      return row;
+    }
+    function fetchAll() {
+      return sb.from(table).select("id,data").then(function (res) {
+        if (res.error) throw res.error;
+        return res.data.map(toRow);
+      });
+    }
+    return {
+      subscribe: function (cb, onError) {
+        fetchAll().then(cb).catch(function (err) { if (onError) onError(err); });
+        var channel = sb
+          .channel(table + "-changes")
+          .on("postgres_changes", { event: "*", schema: "public", table: table }, function () {
+            fetchAll().then(cb).catch(function (err) { if (onError) onError(err); });
+          })
+          .subscribe();
+        return function () { sb.removeChannel(channel); };
+      },
+      list: fetchAll,
+      add: function (data) {
+        data.createdAt = nowIso();
+        data.updatedAt = nowIso();
+        return sb.from(table).insert({ data: data }).select("id,data").single().then(function (res) {
+          if (res.error) throw res.error;
+          return toRow(res.data);
+        });
+      },
+      update: function (id, data) {
+        data.updatedAt = nowIso();
+        return sb.from(table).select("data").eq("id", id).single().then(function (res) {
+          if (res.error) throw res.error;
+          var merged = Object.assign({}, res.data.data, data);
+          return sb.from(table).update({ data: merged }).eq("id", id);
+        }).then(function (res) {
+          if (res && res.error) throw res.error;
+        });
+      },
+      remove: function (id) {
+        return sb.from(table).delete().eq("id", id).then(function (res) {
+          if (res.error) throw res.error;
+        });
+      }
+    };
+  }
+
+  function makeLocalCollectionStore(storageKey) {
+    function read() {
+      try {
+        var raw = localStorage.getItem(storageKey);
+        return raw ? JSON.parse(raw) : [];
+      } catch (e) { return []; }
+    }
+    function write(rows) {
+      try { localStorage.setItem(storageKey, JSON.stringify(rows)); } catch (e) {}
+    }
+    var store = {
+      list: function () {
+        return Promise.resolve(read());
+      },
+      add: function (data) {
+        var rows = read();
+        data.id = uid();
+        data.createdAt = nowIso();
+        data.updatedAt = nowIso();
+        rows.push(data);
+        write(rows);
+        store._emit(rows);
+        return Promise.resolve(data);
+      },
+      update: function (id, data) {
+        var rows = read();
+        var idx = rows.findIndex(function (r) { return r.id === id; });
+        if (idx >= 0) {
+          data.updatedAt = nowIso();
+          rows[idx] = Object.assign({}, rows[idx], data);
+          write(rows);
+          store._emit(rows);
+        }
+        return Promise.resolve();
+      },
+      remove: function (id) {
+        var rows = read().filter(function (r) { return r.id !== id; });
+        write(rows);
+        store._emit(rows);
+        return Promise.resolve();
+      },
+      _listeners: [],
+      _emit: function (rows) { store._listeners.forEach(function (fn) { fn(rows); }); },
+      subscribe: function (cb) {
+        store._listeners.push(cb);
+        cb(read());
+        return function () {
+          store._listeners = store._listeners.filter(function (fn) { return fn !== cb; });
+        };
+      }
+    };
+    return store;
+  }
+
+  // ---------- follow-up logic ----------
+
+  function daysUntil(dateStr) {
+    var today = new Date();
+    today.setHours(0, 0, 0, 0);
+    var d = new Date(dateStr + "T00:00:00");
+    return Math.round((d - today) / 86400000);
+  }
+
+  function followUpStatus(c) {
+    if (!c.followUpDate) return "none";
+    if (c.followUpDone) return "done";
+    var diff = daysUntil(c.followUpDate);
+    if (diff < 0) return "overdue";
+    if (diff <= 7) return "due";
+    return "scheduled";
+  }
+
+  var STATUS_META = {
+    overdue: { label: "Overdue", var: "overdue" },
+    due: { label: "Due soon", var: "due" },
+    scheduled: { label: "Scheduled", var: "scheduled" },
+    done: { label: "Done", var: "done" },
+    none: { label: "—", var: "none" }
+  };
+
+  function fmtDate(dateStr) {
+    if (!dateStr) return "";
+    var d = new Date(dateStr + "T00:00:00");
+    return d.toLocaleDateString(undefined, { month: "short", day: "numeric", year: "numeric" });
+  }
+
+  function relativeFollowUp(c) {
+    if (!c.followUpDate) return "";
+    var diff = daysUntil(c.followUpDate);
+    if (c.followUpDone) return "completed";
+    if (diff === 0) return "today";
+    if (diff === 1) return "tomorrow";
+    if (diff === -1) return "1 day overdue";
+    if (diff < 0) return (-diff) + " days overdue";
+    return "in " + diff + " days";
+  }
+
+  // ---------- rendering ----------
+
+  var $ = function (sel) { return document.querySelector(sel); };
+
+  function renderFilters() {
+    var group = $("#filterGroup");
+    group.innerHTML = "";
+    var label = document.createElement("div");
+    label.className = "filter-label";
+    label.textContent = "Type";
+    group.appendChild(label);
+
+    TYPES.forEach(function (t) {
+      var count = state.contacts.filter(function (c) { return c.type === t.id; }).length;
+      var row = document.createElement("label");
+      row.className = "filter-row";
+      var dot = document.createElement("span");
+      dot.className = "dot";
+      dot.style.background = "var(--type-" + t.id + ")";
+      var cb = document.createElement("input");
+      cb.type = "checkbox";
+      cb.checked = state.activeTypes.has(t.id);
+      cb.addEventListener("change", function () {
+        if (cb.checked) state.activeTypes.add(t.id); else state.activeTypes.delete(t.id);
+        renderContent();
+      });
+      var name = document.createElement("span");
+      name.className = "name";
+      name.textContent = t.label;
+      var cnt = document.createElement("span");
+      cnt.className = "count mono";
+      cnt.textContent = count;
+      row.appendChild(cb);
+      row.appendChild(dot);
+      row.appendChild(name);
+      row.appendChild(cnt);
+      group.appendChild(row);
+    });
+  }
+
+  function renderStats() {
+    var total = state.contacts.length;
+    var overdue = state.contacts.filter(function (c) { return followUpStatus(c) === "overdue"; }).length;
+    var due = state.contacts.filter(function (c) { return followUpStatus(c) === "due"; }).length;
+    var none = state.contacts.filter(function (c) { return followUpStatus(c) === "none"; }).length;
+    $("#statTotal").textContent = total;
+    $("#statOverdue").textContent = overdue;
+    $("#statDue").textContent = due;
+    $("#statNone").textContent = none;
+  }
+
+  function sortRows(rows) {
+    var key = state.sortKey, dir = state.sortDir === "asc" ? 1 : -1;
+    return rows.slice().sort(function (a, b) {
+      if (key === "followUpDate") {
+        var rank = { overdue: 0, due: 1, scheduled: 2, none: 3, done: 4 };
+        var sa = rank[followUpStatus(a)], sb = rank[followUpStatus(b)];
+        if (sa !== sb) return (sa - sb) * dir;
+        var da = a.followUpDate || "9999", db_ = b.followUpDate || "9999";
+        return da < db_ ? -1 * dir : da > db_ ? 1 * dir : 0;
+      }
+      if (key === "type") {
+        return (a.type || "").localeCompare(b.type || "") * dir;
+      }
+      var av = (a.name || "").toLowerCase(), bv = (b.name || "").toLowerCase();
+      return av < bv ? -1 * dir : av > bv ? 1 * dir : 0;
+    });
+  }
+
+  function matchesSearch(c, q) {
+    if (!q) return true;
+    var hay = [c.name, c.company, c.address, c.email, c.phoneWork, c.phoneMobile, c.offer, c.notes, SOURCE_LABEL[c.source]].join(" ").toLowerCase();
+    return hay.indexOf(q) !== -1;
+  }
+
+  function iconSvg(name) {
+    var icons = {
+      edit: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M11.3 2.3a1.4 1.4 0 0 1 2 2L5.8 12.8l-2.9.7.7-2.9 7.7-8.3z" stroke-linejoin="round" stroke-linecap="round"/></svg>',
+      trash: '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 4.5h10M6.3 4.5V3a1 1 0 0 1 1-1h1.4a1 1 0 0 1 1 1v1.5M4.3 4.5l.5 8.2a1 1 0 0 0 1 .9h4.4a1 1 0 0 0 1-.9l.5-8.2" stroke-linecap="round" stroke-linejoin="round"/></svg>'
+    };
+    return icons[name] || "";
+  }
+
+  function renderContent() {
+    var container = $("#content");
+    var filtered = state.contacts.filter(function (c) {
+      return state.activeTypes.has(c.type) && matchesSearch(c, state.search);
+    });
+    renderStats();
+    renderFilters();
+    updateBell();
+
+    if (state.contacts.length === 0 && state.loaded) {
+      container.innerHTML = emptyStateHtml();
+      var cta = $("#emptyAddBtn");
+      if (cta) cta.addEventListener("click", openAddPanel);
+      return;
+    }
+
+    var sorted = sortRows(filtered);
+
+    var sortBtn = function (key, label) {
+      var active = state.sortKey === key;
+      return '<button class="sort-btn' + (active ? ' active' : '') + '" data-sort="' + key + '">' + label +
+        (active ? (state.sortDir === "asc" ? " ↑" : " ↓") : "") + '</button>';
+    };
+    var html = '<div class="list-toolbar"><span class="sort-label">Sort by</span>' +
+      sortBtn("followUpDate", "Follow-up") + sortBtn("name", "Name") + sortBtn("type", "Type") +
+      '</div>';
+
+    if (sorted.length === 0) {
+      html += '<div style="text-align:center;color:var(--ink-faint);padding:48px 20px;">No contacts match this filter.</div>';
+    } else {
+      html += '<div class="contact-grid">';
+      sorted.forEach(function (c) {
+        var status = followUpStatus(c);
+        var meta = STATUS_META[status];
+        var contactLine = c.email ? escapeHtml(c.email)
+          : c.phoneWork ? escapeHtml(c.phoneWork)
+          : c.phoneMobile ? escapeHtml(c.phoneMobile)
+          : '<span class="muted">—</span>';
+        var metaLine = (c.firstContact ? fmtDate(c.firstContact) : '—') +
+          (c.source ? ' · ' + escapeHtml(SOURCE_LABEL[c.source] || c.source) : '');
+        html += '<div class="contact-card" data-id="' + c.id + '">' +
+          '<div class="card-actions">' +
+            '<button class="btn btn-ghost btn-icon" data-edit="' + c.id + '" aria-label="Edit">' + iconSvg("edit") + '</button>' +
+            '<button class="btn btn-ghost btn-icon" data-delete="' + c.id + '" aria-label="Delete">' + iconSvg("trash") + '</button>' +
+          '</div>' +
+          '<div class="card-row card-head">' +
+            '<span class="card-name">' + escapeHtml(c.name) + '</span>' +
+            '<span class="pill" style="background:color-mix(in srgb, var(--type-' + c.type + ') 16%, transparent); color: var(--type-' + c.type + ')"><span class="dot" style="background:var(--type-' + c.type + ')"></span>' + TYPE_LABEL[c.type] + '</span>' +
+          '</div>' +
+          '<div class="card-row">' + (c.company ? escapeHtml(c.company) : '<span class="muted">—</span>') + '</div>' +
+          '<div class="card-row">' + contactLine + '</div>' +
+          '<div class="card-row">' + (c.offer ? escapeHtml(c.offer) : '<span class="muted">—</span>') + '</div>' +
+          '<div class="card-row mono">' + escapeHtml(metaLine) + '</div>' +
+          '<div class="card-row card-foot">' +
+            '<span class="status-chip" style="background:var(--status-' + meta.var + '-soft); color:var(--status-' + meta.var + ')">' + meta.label + (c.followUpDate ? ' · ' + relativeFollowUp(c) : '') + '</span>' +
+            (c.followUpDate && !c.followUpDone ? '<button class="done-toggle" data-done="' + c.id + '">mark done</button>' : '') +
+          '</div>' +
+        '</div>';
+      });
+      html += '</div>';
+    }
+
+    container.innerHTML = html;
+
+    container.querySelectorAll("[data-sort]").forEach(function (btn) {
+      btn.addEventListener("click", function () {
+        var key = btn.getAttribute("data-sort");
+        if (state.sortKey === key) {
+          state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
+        } else {
+          state.sortKey = key;
+          state.sortDir = "asc";
+        }
+        renderContent();
+      });
+    });
+    container.querySelectorAll(".contact-card").forEach(function (card) {
+      card.addEventListener("click", function (e) {
+        if (e.target.closest(".card-actions") || e.target.closest("[data-done]")) return;
+        openEditPanel(card.getAttribute("data-id"));
+      });
+    });
+    container.querySelectorAll("[data-edit]").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        openEditPanel(btn.getAttribute("data-edit"));
+      });
+    });
+    container.querySelectorAll("[data-delete]").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        handleDelete(btn.getAttribute("data-delete"));
+      });
+    });
+    container.querySelectorAll("[data-done]").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        state.store.update(btn.getAttribute("data-done"), { followUpDone: true }).catch(function (err) {
+          console.error("Balvia: failed to update follow-up", err);
+          showToast("Couldn't update that follow-up — " + errMessage(err), "error");
+        });
+      });
+    });
+  }
+
+  function emptyStateHtml() {
+    var rows = EXAMPLES.map(function (c) {
+      var meta = STATUS_META[c.followUpDate] || STATUS_META.none;
+      return '<tr>' +
+        '<td class="who"><div class="name">' + c.name + '</div><div class="company">' + c.company + '</div></td>' +
+        '<td><span class="pill" style="background:color-mix(in srgb, var(--type-' + c.type + ') 16%, transparent); color: var(--type-' + c.type + ')"><span class="dot" style="background:var(--type-' + c.type + ')"></span>' + TYPE_LABEL[c.type] + '</span></td>' +
+        '<td class="offer-cell">' + c.offer + '</td>' +
+        '<td><span class="status-chip" style="background:var(--status-' + meta.var + '-soft); color:var(--status-' + meta.var + ')">' + meta.label + '</span></td>' +
+        '</tr>';
+    }).join("");
+    return '<div class="empty-state">' +
+      '<span class="example-tag">Example</span>' +
+      '<h2>Nothing in the ledger yet</h2>' +
+      '<p>Add your first customer, client, supplier, lender, borrower or architect — their contact details, what they offer, and when you next need to follow up.</p>' +
+      '<button class="btn btn-primary" id="emptyAddBtn">' +
+        '<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" style="width:15px;height:15px"><path d="M8 2.5v11M2.5 8h11" stroke-linecap="round"/></svg>' +
+        'Add your first contact</button>' +
+      '<div class="table-wrap example-table"><table><thead><tr><th>Contact</th><th>Type</th><th>What they offer</th><th>Follow-up</th></tr></thead><tbody>' + rows + '</tbody></table></div>' +
+      '</div>';
+  }
+
+  var toastTimer = null;
+  function showToast(message, tone, durationMs) {
+    var el = $("#toast");
+    if (!el) return;
+    el.textContent = message;
+    el.className = "toast" + (tone === "error" ? " error" : "");
+    el.hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(function () { el.hidden = true; }, durationMs || 4500);
+  }
+
+  var confirmResolver = null;
+  function askConfirm(message) {
+    return new Promise(function (resolve) {
+      confirmResolver = resolve;
+      $("#confirmMessage").textContent = message;
+      $("#confirmOverlay").hidden = false;
+    });
+  }
+  function closeConfirm(result) {
+    $("#confirmOverlay").hidden = true;
+    if (confirmResolver) {
+      var resolve = confirmResolver;
+      confirmResolver = null;
+      resolve(result);
+    }
+  }
+
+  function errMessage(err) {
+    if (err && err.message) return err.message;
+    return "please try again.";
+  }
+
+  function escapeHtml(s) {
+    return String(s == null ? "" : s).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  function escapeAttr(s) { return escapeHtml(s); }
+
+  // ---------- panel ----------
+
+  function populateTypeSelect() {
+    var sel = $("#f-type");
+    sel.innerHTML = TYPES.map(function (t) { return '<option value="' + t.id + '">' + t.label + '</option>'; }).join("");
+  }
+
+  function populateSourceSelect() {
+    var sel = $("#f-source");
+    sel.innerHTML = '<option value="">—</option>' +
+      SOURCES.map(function (s) { return '<option value="' + s.id + '">' + s.label + '</option>'; }).join("");
+  }
+
+  // ---------- notification users ----------
+
+  function renderUsersList() {
+    var el = $("#usersList");
+    if (!el) return;
+    if (state.users.length === 0) {
+      el.innerHTML = '<div class="users-empty">No notification users yet — add someone below.</div>';
+    } else {
+      el.innerHTML = state.users.map(function (u) {
+        var editing = u.id === state.editingUserId;
+        return '<div class="user-row' + (editing ? ' editing' : '') + '">' +
+          '<div class="who"><div class="u-name">' + escapeHtml(u.name) + '</div><div class="u-email">' + escapeHtml(u.email) + '</div></div>' +
+          '<div class="row-actions">' +
+          '<button class="btn btn-ghost btn-icon" data-user-edit="' + u.id + '" aria-label="Edit">' + iconSvg("edit") + '</button>' +
+          '<button class="btn btn-ghost btn-icon" data-user-delete="' + u.id + '" aria-label="Remove">' + iconSvg("trash") + '</button>' +
+          '</div></div>';
+      }).join("");
+      el.querySelectorAll("[data-user-edit]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var u = state.users.find(function (x) { return x.id === btn.getAttribute("data-user-edit"); });
+          if (u) startEditUser(u);
+        });
+      });
+      el.querySelectorAll("[data-user-delete]").forEach(function (btn) {
+        btn.addEventListener("click", function () {
+          var u = state.users.find(function (x) { return x.id === btn.getAttribute("data-user-delete"); });
+          if (!u) return;
+          askConfirm('Remove "' + u.name + '" from notification users?').then(function (ok) {
+            if (!ok) return;
+            state.usersStore.remove(u.id).catch(function (err) {
+              console.error("Balvia: failed to remove notification user", err);
+              showToast("Couldn't remove that user — " + errMessage(err), "error");
+            });
+            if (state.editingUserId === u.id) cancelEditUser();
+          });
+        });
+      });
+    }
+  }
+
+  function startEditUser(u) {
+    state.editingUserId = u.id;
+    $("#u-name").value = u.name || "";
+    $("#u-email").value = u.email || "";
+    $("#userFormSubmit").textContent = "Save changes";
+    $("#userFormCancel").hidden = false;
+    renderUsersList();
+    $("#u-name").focus();
+  }
+
+  function cancelEditUser() {
+    state.editingUserId = null;
+    $("#userAddForm").reset();
+    $("#userFormSubmit").textContent = "Add user";
+    $("#userFormCancel").hidden = true;
+    renderUsersList();
+  }
+
+  function populateNotifyUsersList(selectedIds) {
+    var el = $("#notifyUsersList");
+    if (!el) return;
+    selectedIds = selectedIds || [];
+    if (state.users.length === 0) {
+      el.innerHTML = '<div class="empty-hint">No notification users yet. Add some from the sidebar, then come back to pick recipients.</div>';
+      return;
+    }
+    el.innerHTML = state.users.map(function (u) {
+      var checked = selectedIds.indexOf(u.id) !== -1 ? " checked" : "";
+      return '<label class="user-check"><input type="checkbox" value="' + u.id + '"' + checked + '> ' +
+        escapeHtml(u.name) + ' <span class="email">' + escapeHtml(u.email) + '</span></label>';
+    }).join("");
+  }
+
+  function toggleNotifyUsersVisibility() {
+    var on = $("#f-notify-enabled").checked;
+    $("#notifyUsersList").style.display = on ? "flex" : "none";
+  }
+
+  function refreshUsers(isRetry) {
+    if (!state.usersStore || !state.usersStore.list) return Promise.resolve();
+    return state.usersStore.list().then(function (rows) {
+      state.users = rows;
+      state.usersLoaded = true;
+      renderUsersList();
+      updateBell();
+    }).catch(function (err) {
+      console.error("Balvia: failed to refresh notification users", err);
+      if (!isRetry) {
+        return new Promise(function (resolve) {
+          setTimeout(resolve, 1200 + Math.random() * 800);
+        }).then(function () { return refreshUsers(true); });
+      }
+      showToast("Couldn't load notification users — " + errMessage(err), "error");
+    });
+  }
+
+  function openUsersPanel() {
+    renderUsersList();
+    refreshUsers();
+    $("#usersOverlay").classList.add("open");
+    $("#usersPanelEl").classList.add("open");
+    $("#usersPanelEl").setAttribute("aria-hidden", "false");
+    setTimeout(function () { $("#u-name").focus(); }, 50);
+  }
+  function closeUsersPanel() {
+    $("#usersOverlay").classList.remove("open");
+    $("#usersPanelEl").classList.remove("open");
+    $("#usersPanelEl").setAttribute("aria-hidden", "true");
+    cancelEditUser();
+  }
+
+  function handleUserFormSubmit(e) {
+    e.preventDefault();
+    var name = $("#u-name").value.trim();
+    var email = $("#u-email").value.trim();
+    if (!name || !email) return;
+    var submitBtn = $("#userFormSubmit");
+    submitBtn.disabled = true;
+    var editingId = state.editingUserId;
+    var promise = editingId
+      ? state.usersStore.update(editingId, { name: name, email: email })
+      : state.usersStore.add({ name: name, email: email });
+    promise.then(function () {
+      submitBtn.disabled = false;
+      cancelEditUser();
+      $("#u-name").focus();
+      return refreshUsers();
+    }).catch(function (err) {
+      submitBtn.disabled = false;
+      console.error("Balvia: failed to save notification user", err);
+      showToast("Couldn't save that user — " + errMessage(err), "error");
+    });
+  }
+
+  // ---------- notification bell ----------
+
+  function dueNotifications() {
+    return state.contacts.filter(function (c) {
+      return c.notify && c.notify.enabled && c.followUpDate && !c.followUpDone;
+    }).sort(function (a, b) {
+      return (a.followUpDate || "").localeCompare(b.followUpDate || "");
+    });
+  }
+
+  function recipientNames(c) {
+    var ids = (c.notify && c.notify.userIds) || [];
+    var names = ids.map(function (id) {
+      var u = state.users.find(function (x) { return x.id === id; });
+      return u ? u.name : null;
+    }).filter(Boolean);
+    return names;
+  }
+
+  function updateBell() {
+    var badge = $("#bellBadge");
+    if (!badge) return;
+    var due = dueNotifications();
+    if (due.length > 0) {
+      badge.hidden = false;
+      badge.textContent = due.length > 9 ? "9+" : String(due.length);
+    } else {
+      badge.hidden = true;
+    }
+    renderNotifDropdown(due);
+  }
+
+  function renderNotifDropdown(due) {
+    var el = $("#notifDropdown");
+    if (!el) return;
+    due = due || dueNotifications();
+    if (due.length === 0) {
+      el.innerHTML = '<div class="notif-title">Notifications</div><div class="notif-empty">No contacts with notifications on and a follow-up date set right now.</div>';
+      return;
+    }
+    el.innerHTML = '<div class="notif-title">Follow-ups to notify on</div>' + due.map(function (c) {
+      var status = followUpStatus(c);
+      var meta = STATUS_META[status];
+      var names = recipientNames(c);
+      var who = names.length ? "Notifying " + names.join(", ") : "No recipients selected";
+      return '<div class="notif-item">' +
+        '<div class="n-name">' + escapeHtml(c.name) + '</div>' +
+        '<div class="n-meta"><span style="color:var(--status-' + meta.var + ')">' + meta.label + ' · ' + fmtDate(c.followUpDate) + '</span></div>' +
+        '<div class="n-meta">' + escapeHtml(who) + '</div>' +
+        '</div>';
+    }).join("");
+  }
+
+  function toggleNotifDropdown() {
+    var el = $("#notifDropdown");
+    el.hidden = !el.hidden;
+  }
+  function closeNotifDropdown() {
+    $("#notifDropdown").hidden = true;
+  }
+
+  function openAddPanel() {
+    state.editingId = null;
+    $("#panelTitle").textContent = "Add contact";
+    $("#contactForm").reset();
+    $("#f-first").value = new Date().toISOString().slice(0, 10);
+    $("#f-type").value = "customer";
+    $("#f-source").value = "";
+    $("#f-notify-enabled").checked = false;
+    populateNotifyUsersList([]);
+    toggleNotifyUsersVisibility();
+    refreshUsers().then(function () { populateNotifyUsersList([]); });
+    openPanel();
+  }
+
+  function openEditPanel(id) {
+    var c = state.contacts.find(function (x) { return x.id === id; });
+    if (!c) return;
+    state.editingId = id;
+    $("#panelTitle").textContent = "Edit contact";
+    $("#f-id").value = c.id;
+    $("#f-name").value = c.name || "";
+    $("#f-type").value = c.type || "customer";
+    $("#f-company").value = c.company || "";
+    $("#f-address").value = c.address || "";
+    $("#f-email").value = c.email || "";
+    $("#f-phoneWork").value = c.phoneWork || "";
+    $("#f-phoneMobile").value = c.phoneMobile || "";
+    $("#f-offer").value = c.offer || "";
+    $("#f-first").value = c.firstContact || "";
+    $("#f-source").value = c.source || "";
+    $("#f-followup").value = c.followUpDate || "";
+    $("#f-notes").value = c.notes || "";
+    $("#f-notify-enabled").checked = !!(c.notify && c.notify.enabled);
+    var selectedUserIds = (c.notify && c.notify.userIds) || [];
+    populateNotifyUsersList(selectedUserIds);
+    toggleNotifyUsersVisibility();
+    refreshUsers().then(function () { populateNotifyUsersList(selectedUserIds); });
+    openPanel();
+  }
+
+  function openPanel() {
+    state.formDirty = false;
+    $("#overlay").classList.add("open");
+    $("#panel").classList.add("open");
+    $("#panel").setAttribute("aria-hidden", "false");
+    setTimeout(function () { $("#f-name").focus(); }, 50);
+  }
+  function requestClosePanel() {
+    if (!state.formDirty) { closePanel(); return; }
+    askConfirm("Discard this contact? What you've entered won't be saved.").then(function (ok) {
+      if (ok) closePanel();
+    });
+  }
+  function closePanel() {
+    state.formDirty = false;
+    $("#overlay").classList.remove("open");
+    $("#panel").classList.remove("open");
+    $("#panel").setAttribute("aria-hidden", "true");
+  }
+
+  function handleSave(e) {
+    e.preventDefault();
+    var name = $("#f-name").value.trim();
+    if (!name) { $("#f-name").focus(); return; }
+    var data = {
+      name: name,
+      type: $("#f-type").value,
+      company: $("#f-company").value.trim(),
+      address: $("#f-address").value.trim(),
+      email: $("#f-email").value.trim(),
+      phoneWork: $("#f-phoneWork").value.trim(),
+      phoneMobile: $("#f-phoneMobile").value.trim(),
+      offer: $("#f-offer").value.trim(),
+      firstContact: $("#f-first").value || "",
+      source: $("#f-source").value || "",
+      followUpDate: $("#f-followup").value || "",
+      notes: $("#f-notes").value.trim(),
+      notify: {
+        enabled: $("#f-notify-enabled").checked,
+        userIds: Array.prototype.slice.call($("#notifyUsersList").querySelectorAll("input:checked")).map(function (i) { return i.value; })
+      }
+    };
+    var promise;
+    if (state.editingId) {
+      var existing = state.contacts.find(function (c) { return c.id === state.editingId; });
+      if (existing && existing.followUpDate !== data.followUpDate) data.followUpDone = false;
+      promise = state.store.update(state.editingId, data);
+    } else {
+      data.followUpDone = false;
+      promise = state.store.add(data);
+    }
+    var saveBtn = $("#saveBtn");
+    saveBtn.disabled = true;
+    promise.then(function () {
+      saveBtn.disabled = false;
+      closePanel();
+    }).catch(function (err) {
+      saveBtn.disabled = false;
+      console.error("Balvia: failed to save contact", err);
+      showToast("Couldn't save this contact — " + errMessage(err), "error");
+    });
+  }
+
+  function handleDelete(id) {
+    var c = state.contacts.find(function (x) { return x.id === id; });
+    if (!c) return;
+    askConfirm('Remove "' + c.name + '" from your ledger?').then(function (ok) {
+      if (!ok) return;
+      state.store.remove(id).catch(function (err) {
+        console.error("Balvia: failed to delete contact", err);
+        showToast("Couldn't remove that contact — " + errMessage(err), "error");
+      });
+    });
+  }
+
+  // ---------- boot ----------
+
+  function setSyncStatus(mode) {
+    var dot = $("#syncDot"), text = $("#syncText");
+    if (mode === "db") {
+      dot.className = "sync-dot";
+      text.textContent = "Synced";
+    } else if (mode === "local") {
+      dot.className = "sync-dot local";
+      text.textContent = "Saved on this device";
+    } else {
+      dot.className = "sync-dot local";
+      text.textContent = "Connecting…";
+    }
+  }
+
+  function init() {
+    populateTypeSelect();
+    populateSourceSelect();
+    renderFilters();
+    renderContent();
+
+    $("#addBtn").addEventListener("click", openAddPanel);
+    $("#panelClose").addEventListener("click", requestClosePanel);
+    $("#cancelBtn").addEventListener("click", requestClosePanel);
+    $("#overlay").addEventListener("click", requestClosePanel);
+    $("#contactForm").addEventListener("submit", handleSave);
+    $("#contactForm").addEventListener("input", function () { state.formDirty = true; });
+    $("#f-notify-enabled").addEventListener("change", function () {
+      state.formDirty = true;
+      toggleNotifyUsersVisibility();
+    });
+    $("#notifyUsersList").addEventListener("change", function () { state.formDirty = true; });
+
+    $("#usersBtn").addEventListener("click", openUsersPanel);
+    $("#usersPanelClose").addEventListener("click", closeUsersPanel);
+    $("#usersOverlay").addEventListener("click", closeUsersPanel);
+    $("#userAddForm").addEventListener("submit", handleUserFormSubmit);
+    $("#userFormCancel").addEventListener("click", cancelEditUser);
+
+    $("#confirmCancel").addEventListener("click", function () { closeConfirm(false); });
+    $("#confirmOk").addEventListener("click", function () { closeConfirm(true); });
+    $("#confirmOverlay").addEventListener("click", function (e) {
+      if (e.target === $("#confirmOverlay")) closeConfirm(false);
+    });
+
+    $("#bellBtn").addEventListener("click", function (e) {
+      e.stopPropagation();
+      toggleNotifDropdown();
+    });
+    document.addEventListener("click", function (e) {
+      var dd = $("#notifDropdown");
+      if (!dd.hidden && !dd.contains(e.target) && e.target !== $("#bellBtn") && !$("#bellBtn").contains(e.target)) {
+        closeNotifDropdown();
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") {
+        if (!$("#confirmOverlay").hidden) { closeConfirm(false); return; }
+        requestClosePanel();
+        closeUsersPanel();
+        closeNotifDropdown();
+      }
+    });
+    $("#search").addEventListener("input", function (e) {
+      state.search = e.target.value.trim().toLowerCase();
+      renderContent();
+    });
+
+    connectStore();
+  }
+
+  function connectStore() {
+    var url = window.SUPABASE_URL, key = window.SUPABASE_ANON_KEY;
+    var configured = url && key && url.indexOf("YOUR-PROJECT") === -1 && key.indexOf("YOUR-ANON") === -1;
+    if (!configured || !window.supabase || !window.supabase.createClient) {
+      startLocal();
+      return;
+    }
+
+    var sb = window.supabase.createClient(url, key);
+    state.store = makeSupabaseCollectionStore(sb, "contacts");
+    state.usersStore = makeSupabaseCollectionStore(sb, "company_users");
+    state.storeMode = "db";
+    setSyncStatus("db");
+    state.store.subscribe(function (rows) {
+      state.contacts = rows;
+      state.loaded = true;
+      renderContent();
+    }, function (err) {
+      console.error("Balvia: failed to load contacts", err);
+      showToast("Couldn't load contacts — " + errMessage(err), "error");
+    });
+    state.usersStore.subscribe(function (rows) {
+      state.users = rows;
+      state.usersLoaded = true;
+      renderUsersList();
+      updateBell();
+    }, function (err) {
+      console.error("Balvia: failed to load notification users", err);
+      showToast("Couldn't load notification users — " + errMessage(err), "error");
+    });
+  }
+
+  function startLocal() {
+    if (state.storeMode === "local") return;
+    state.storeMode = "local";
+    state.store = makeLocalCollectionStore("balvia_contacts_v1");
+    state.usersStore = makeLocalCollectionStore("balvia_users_v1");
+    setSyncStatus("local");
+    showToast("Supabase isn't configured yet (edit config.js) — saving to this browser only for now.", "error", 8000);
+    state.store.subscribe(function (rows) {
+      state.contacts = rows;
+      state.loaded = true;
+      renderContent();
+    });
+    state.usersStore.subscribe(function (rows) {
+      state.users = rows;
+      state.usersLoaded = true;
+      renderUsersList();
+      updateBell();
+    });
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+</script>
+</body>
+</html>
