@@ -9,5 +9,5 @@
 // it is NOT a secret. Real protection comes from the Row Level Security
 // policies in supabase/schema.sql. See README.md for full setup steps.
 
-window.SUPABASE_URL = "https://YOUR-PROJECT.supabase.co";
-window.SUPABASE_ANON_KEY = "YOUR-ANON-PUBLIC-KEY";
+window.SUPABASE_URL = "https://jzwhlaytexxqvbojdugc.supabase.co";
+window.SUPABASE_ANON_KEY = "sb_publishable_TzFKGCShY4PDse662vXPJQ_wMjdeuHc";
